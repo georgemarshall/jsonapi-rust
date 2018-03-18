@@ -455,25 +455,17 @@ fn can_diff_resource() {
     let data1: Result<Resource, serde_json::Error> = serde_json::from_str(&s1);
     let data2: Result<Resource, serde_json::Error> = serde_json::from_str(&s2);
 
-    match data1 {
-        Err(_) => assert!(false),
-        Ok(res1) => {
-            // So far so good
-            match data2 {
-                Err(_) => assert!(false),
-                Ok(res2) => {
-                    match res1.diff(res2) {
-                        Err(_) => {
-                            assert!(false);
-                        }
-                        Ok(patchset) => {
-                            println!("can_diff_resource: PatchSet is {:?}", patchset);
-                            assert_eq!(patchset.patches.len(), 5);
-                        }
-                    }
+    match (data1, data2) {
+        (Ok(res1), Ok(res2)) => {
+            match res1.diff(&res2) {
+                Ok(patchset) => {
+                    println!("can_diff_resource: PatchSet is {:?}", patchset);
+                    assert_eq!(patchset.patches.len(), 5);
                 }
+                Err(_) => assert!(false),
             }
         }
+        _ => assert!(false),
     }
 }
 

@@ -21,7 +21,7 @@ struct Flea {
 jsonapi_model!(Flea; "flea");
 
 #[test]
-fn to_jsonapi_document_and_back(){
+fn to_jsonapi_document_and_back() {
     let dog = Dog{
         id: "1".into(),
         name: "fido".into(),
@@ -36,7 +36,7 @@ fn to_jsonapi_document_and_back(){
     let json = serde_json::to_string(&doc).unwrap();
     println!("JSON IS:");
     let dog_doc: JsonApiDocument = serde_json::from_str(&json)
-        .expect("Dog JsonApiDocument should be created from the dog json");;
+        .expect("Dog JsonApiDocument should be created from the dog json");
     let dog_again = Dog::from_jsonapi_document(&dog_doc)
         .expect("Dog should be generated from the dog_doc");
 
@@ -78,10 +78,10 @@ fn test_vec_to_jsonapi_document() {
             name: "morty".into(),
         },
     ];
-    let doc = vec_to_jsonapi_document(fleas);
+    let doc = vec_to_jsonapi_document(&fleas);
     assert!(doc.is_valid());
 }
 
 #[test]
-fn from_jsonapi_document_and_back(){
+fn from_jsonapi_document_and_back() {
 }

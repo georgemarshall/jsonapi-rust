@@ -124,7 +124,7 @@ impl Query {
 
                 Query {
                     _type: "none".into(),
-                    include: include,
+                    include,
                     fields: Some(fields),
                     page: Some(page),
                 }

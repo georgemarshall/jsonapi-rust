@@ -330,7 +330,7 @@ impl Resource {
         }
     }
 
-    pub fn diff(&self, other: Resource) -> std::result::Result<PatchSet, DiffPatchError> {
+    pub fn diff(&self, other: &Resource) -> std::result::Result<PatchSet, DiffPatchError> {
         if self._type != other._type {
             Err(DiffPatchError::IncompatibleTypes(self._type.clone(), other._type.clone()))
         } else {
@@ -360,7 +360,7 @@ impl Resource {
                                    other);
                         }
                         Some(other_value) => {
-                            if self_value.to_string() != other_value.to_string() {
+                            if self_value != other_value {
                                 patchset.push(Patch {
                                     patch_type: PatchType::Attribute,
                                     subject: attr.clone(),
@@ -378,7 +378,7 @@ impl Resource {
         }
     }
 
-    pub fn patch(&mut self, patchset: PatchSet) -> Result<Resource> {
+    pub fn patch(&mut self, patchset: &PatchSet) -> Result<Resource> {
         let mut res = self.clone();
         for patch in &patchset.patches {
             res.attributes.insert(patch.subject.clone(), patch.next.clone());

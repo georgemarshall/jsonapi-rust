@@ -6,7 +6,7 @@ use serde_json::{from_value, to_value, Value, Map};
 
 /// A trait for any struct that can be converted from/into a Resource.
 /// The only requirement is that your struct has an 'id: String' field.
-/// You shouldn't be implementing JsonApiModel manually, look at the
+/// You shouldn't be implementing `JsonApiModel` manually, look at the
 /// `jsonapi_model!` macro instead.
 pub trait JsonApiModel: Serialize
     where for<'de> Self: Deserialize<'de>
@@ -49,7 +49,7 @@ pub trait JsonApiModel: Serialize
     }
 
     fn to_jsonapi_resource(&self) -> (Resource, Option<Resources>) {
-        if let Value::Object(mut attrs) = to_value(self).unwrap(){
+        if let Value::Object(mut attrs) = to_value(self).unwrap() {
             let _ = attrs.remove("id");
             let resource = Resource{
                 _type: self.jsonapi_type(),
@@ -70,7 +70,7 @@ pub trait JsonApiModel: Serialize
         let (resource, included) = self.to_jsonapi_resource();
         JsonApiDocument {
             data: Some(PrimaryData::Single(Box::new(resource))),
-            included: included,
+            included,
             ..Default::default()
         }
     }
@@ -109,7 +109,7 @@ pub trait JsonApiModel: Serialize
     #[doc(hidden)]
     fn extract_attributes(attrs: &Map<String, Value>) -> ResourceAttributes {
         attrs.iter().filter(|&(key, _)|{
-            if let Some(fields) = Self::relationship_fields(){
+            if let Some(fields) = Self::relationship_fields() {
                 if fields.contains(&key.as_str()) {
                     return false;
                 }
@@ -186,7 +186,7 @@ pub trait JsonApiModel: Serialize
 }
 
 pub fn vec_to_jsonapi_resources<T: JsonApiModel>(
-    objects: Vec<T>,
+    objects: &[T],
 ) -> (Resources, Option<Resources>) {
     let mut included = vec![];
     let resources = objects
@@ -207,11 +207,11 @@ pub fn vec_to_jsonapi_resources<T: JsonApiModel>(
     (resources, opt_included)
 }
 
-pub fn vec_to_jsonapi_document<T: JsonApiModel>(objects: Vec<T>) -> JsonApiDocument {
+pub fn vec_to_jsonapi_document<T: JsonApiModel>(objects: &[T]) -> JsonApiDocument {
     let (resources, included) = vec_to_jsonapi_resources(objects);
     JsonApiDocument {
         data: Some(PrimaryData::Multiple(resources)),
-        included: included,
+        included,
         ..Default::default()
     }
 }
@@ -282,18 +282,3 @@ macro_rules! jsonapi_model {
         }
     );
 }
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
-struct Dog {
-    id: String,
-    name: String,
-    age: i32,
-    main_flea: Flea,
-    fleas: Vec<Flea>,
-}
-jsonapi_model!(Dog; "dog"; has one main_flea; has many fleas);
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
-struct Flea {
-    id: String,
-    name: String,
-}
-jsonapi_model!(Flea; "flea");
