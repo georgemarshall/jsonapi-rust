@@ -1,5 +1,7 @@
-#[macro_use] extern crate jsonapi;
-#[macro_use] extern crate serde_derive;
+#[macro_use]
+extern crate jsonapi;
+#[macro_use]
+extern crate serde_derive;
 extern crate serde_json;
 use jsonapi::model::*;
 
@@ -22,14 +24,23 @@ jsonapi_model!(Flea; "flea");
 
 #[test]
 fn to_jsonapi_document_and_back() {
-    let dog = Dog{
+    let dog = Dog {
         id: "1".into(),
         name: "fido".into(),
         age: 2,
-        main_flea: Flea{id: "1".into(), name: "general flea".into() },
+        main_flea: Flea {
+            id: "1".into(),
+            name: "general flea".into(),
+        },
         fleas: vec![
-            Flea{id: "2".into(), name: "rick".into()},
-            Flea{id: "3".into(), name: "morty".into()}
+            Flea {
+                id: "2".into(),
+                name: "rick".into(),
+            },
+            Flea {
+                id: "3".into(),
+                name: "morty".into(),
+            },
         ],
     };
     let doc = dog.to_jsonapi_document();
@@ -37,8 +48,8 @@ fn to_jsonapi_document_and_back() {
     println!("JSON IS:");
     let dog_doc: JsonApiDocument = serde_json::from_str(&json)
         .expect("Dog JsonApiDocument should be created from the dog json");
-    let dog_again = Dog::from_jsonapi_document(&dog_doc)
-        .expect("Dog should be generated from the dog_doc");
+    let dog_again =
+        Dog::from_jsonapi_document(&dog_doc).expect("Dog should be generated from the dog_doc");
 
     assert_eq!(dog, dog_again);
 }
@@ -83,5 +94,4 @@ fn test_vec_to_jsonapi_document() {
 }
 
 #[test]
-fn from_jsonapi_document_and_back() {
-}
+fn from_jsonapi_document_and_back() {}

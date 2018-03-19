@@ -1,6 +1,6 @@
+extern crate env_logger;
 extern crate jsonapi;
 extern crate serde_json;
-extern crate env_logger;
 
 use jsonapi::api::*;
 
@@ -32,7 +32,6 @@ fn it_works() {
     };
 
     assert_eq!(jsonapidocument.is_valid(), true);
-
 }
 
 #[test]
@@ -115,7 +114,7 @@ fn jsonapi_document_invalid_errors() {
 
     let errors = JsonApiErrors::new();
 
-    let no_content_document : JsonApiDocument = Default::default();
+    let no_content_document: JsonApiDocument = Default::default();
 
     match no_content_document.validate() {
         None => assert!(false),
@@ -170,12 +169,10 @@ fn error_from_json_string() {
     let error: Result<JsonApiError, serde_json::Error> = serde_json::from_str(serialized);
     assert_eq!(error.is_ok(), true);
     match error {
-        Ok(jsonapierror) => {
-            match jsonapierror.id {
-                Some(id) => assert_eq!(id, "1"),
-                None => assert!(false),
-            }
-        }
+        Ok(jsonapierror) => match jsonapierror.id {
+            Some(id) => assert_eq!(id, "1"),
+            None => assert!(false),
+        },
         Err(_) => assert!(false),
     }
 }
@@ -245,23 +242,23 @@ fn api_document_from_json_file() {
     let data: Result<JsonApiDocument, serde_json::Error> = serde_json::from_str(&s);
 
     match data {
-        Ok(res) => {
-            match res.data {
-                Some(PrimaryData::Multiple(arr)) => {
-                    assert_eq!(arr.len(), 1);
-                }
-                Some(PrimaryData::Single(_)) => {
-                    println!("api_document_from_json_file : Expected one Resource in a vector, \
-                              not a direct Resource");
-                    assert!(false);
-                }
-                Some(PrimaryData::None) => {
-                    println!("api_document_from_json_file : Expected one Resource in a vector");
-                    assert!(false);
-                }
-                None => assert!(false),
+        Ok(res) => match res.data {
+            Some(PrimaryData::Multiple(arr)) => {
+                assert_eq!(arr.len(), 1);
             }
-        }
+            Some(PrimaryData::Single(_)) => {
+                println!(
+                    "api_document_from_json_file : Expected one Resource in a vector, \
+                     not a direct Resource"
+                );
+                assert!(false);
+            }
+            Some(PrimaryData::None) => {
+                println!("api_document_from_json_file : Expected one Resource in a vector");
+                assert!(false);
+            }
+            None => assert!(false),
+        },
         Err(err) => {
             println!("api_document_from_json_file : Error: {:?}", err);
             assert!(false);
@@ -278,19 +275,22 @@ fn api_document_collection_from_json_file() {
 
     match data {
         Ok(res) => {
-
             match res.data {
                 Some(PrimaryData::Multiple(arr)) => {
                     assert_eq!(arr.len(), 1);
                 }
                 Some(PrimaryData::Single(_)) => {
-                    println!("api_document_collection_from_json_file : Expected one Resource in \
-                              a vector, not a direct Resource");
+                    println!(
+                        "api_document_collection_from_json_file : Expected one Resource in \
+                         a vector, not a direct Resource"
+                    );
                     assert!(false);
                 }
                 Some(PrimaryData::None) => {
-                    println!("api_document_collection_from_json_file : Expected one Resource in \
-                              a vector");
+                    println!(
+                        "api_document_collection_from_json_file : Expected one Resource in \
+                         a vector"
+                    );
                     assert!(false);
                 }
                 None => assert!(false),
@@ -304,8 +304,10 @@ fn api_document_collection_from_json_file() {
                     assert_eq!(arr[2].id, "12");
                 }
                 None => {
-                    println!("api_document_collection_from_json_file : Expected three Resources \
-                              in 'included' in a vector");
+                    println!(
+                        "api_document_collection_from_json_file : Expected three Resources \
+                         in 'included' in a vector"
+                    );
                     assert!(false);
                 }
             }
@@ -319,7 +321,6 @@ fn api_document_collection_from_json_file() {
                     assert!(false);
                 }
             }
-
         }
         Err(err) => {
             println!("api_document_collection_from_json_file : Error: {:?}", err);
@@ -394,54 +395,45 @@ fn can_get_attribute() {
         Ok(res) => {
             match res.get_attribute("likes") {
                 None => assert!(false),
-                Some(val) => {
-                    match val.as_i64() {
-                        None => assert!(false),
-                        Some(num) => {
-                            let x: i64 = 250;
-                            assert_eq!(num, x);
-                        }
+                Some(val) => match val.as_i64() {
+                    None => assert!(false),
+                    Some(num) => {
+                        let x: i64 = 250;
+                        assert_eq!(num, x);
                     }
-                }
+                },
             }
 
             match res.get_attribute("title") {
                 None => assert!(false),
-                Some(val) => {
-                    match val.as_str() {
-                        None => assert!(false),
-                        Some(s) => {
-                            assert_eq!(s, "Rails is Omakase");
-                        }
+                Some(val) => match val.as_str() {
+                    None => assert!(false),
+                    Some(s) => {
+                        assert_eq!(s, "Rails is Omakase");
                     }
-                }
+                },
             }
 
             match res.get_attribute("published") {
                 None => assert!(false),
-                Some(val) => {
-                    match val.as_bool() {
-                        None => assert!(false),
-                        Some(b) => {
-                            assert_eq!(b, true);
-                        }
+                Some(val) => match val.as_bool() {
+                    None => assert!(false),
+                    Some(b) => {
+                        assert_eq!(b, true);
                     }
-                }
+                },
             }
 
             match res.get_attribute("tags") {
                 None => assert!(false),
-                Some(val) => {
-                    match val.as_array() {
-                        None => assert!(false),
-                        Some(arr) => {
-                            assert_eq!(arr[0], "rails");
-                            assert_eq!(arr[1], "news");
-                        }
+                Some(val) => match val.as_array() {
+                    None => assert!(false),
+                    Some(arr) => {
+                        assert_eq!(arr[0], "rails");
+                        assert_eq!(arr[1], "news");
                     }
-                }
+                },
             }
-
         }
     }
 }
@@ -456,15 +448,13 @@ fn can_diff_resource() {
     let data2: Result<Resource, serde_json::Error> = serde_json::from_str(&s2);
 
     match (data1, data2) {
-        (Ok(res1), Ok(res2)) => {
-            match res1.diff(&res2) {
-                Ok(patchset) => {
-                    println!("can_diff_resource: PatchSet is {:?}", patchset);
-                    assert_eq!(patchset.patches.len(), 5);
-                }
-                Err(_) => assert!(false),
+        (Ok(res1), Ok(res2)) => match res1.diff(&res2) {
+            Ok(patchset) => {
+                println!("can_diff_resource: PatchSet is {:?}", patchset);
+                assert_eq!(patchset.patches.len(), 5);
             }
-        }
+            Err(_) => assert!(false),
+        },
         _ => assert!(false),
     }
 }
@@ -483,8 +473,10 @@ fn it_omits_empty_document_and_primary_data_keys() {
         ..Default::default()
     };
 
-    assert_eq!(serde_json::to_string(&doc).unwrap(),
-        r#"{"data":{"type":"test","id":"123","attributes":{}}}"#);
+    assert_eq!(
+        serde_json::to_string(&doc).unwrap(),
+        r#"{"data":{"type":"test","id":"123","attributes":{}}}"#
+    );
 }
 
 #[test]
@@ -499,7 +491,7 @@ fn it_does_not_omit_an_empty_primary_data() {
 
 #[test]
 fn it_omits_empty_error_keys() {
-    let error = JsonApiError{
+    let error = JsonApiError {
         id: Some("error_id".to_string()),
         ..Default::default()
     };
@@ -507,8 +499,10 @@ fn it_omits_empty_error_keys() {
         errors: Some(vec![error]),
         ..Default::default()
     };
-    assert_eq!(serde_json::to_string(&doc).unwrap(),
-        r#"{"errors":[{"id":"error_id"}]}"#);
+    assert_eq!(
+        serde_json::to_string(&doc).unwrap(),
+        r#"{"errors":[{"id":"error_id"}]}"#
+    );
 }
 
 #[test]

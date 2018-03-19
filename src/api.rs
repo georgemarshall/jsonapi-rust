@@ -29,33 +29,26 @@ pub type JsonApiIds<'a> = Vec<&'a JsonApiId>;
 /// Resource Identifier
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub struct ResourceIdentifier {
-    #[serde(rename = "type")]
-    pub _type: String,
+    #[serde(rename = "type")] pub _type: String,
     pub id: JsonApiId,
 }
 
 /// JSON-API Resource
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default)]
 pub struct Resource {
-    #[serde(rename = "type")]
-    pub _type: String,
+    #[serde(rename = "type")] pub _type: String,
     pub id: JsonApiId,
-    #[serde(default)]
-    pub attributes: ResourceAttributes,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub relationships: Option<Relationships>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub links: Option<Links>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub meta: Option<Meta>,
+    #[serde(default)] pub attributes: ResourceAttributes,
+    #[serde(skip_serializing_if = "Option::is_none")] pub relationships: Option<Relationships>,
+    #[serde(skip_serializing_if = "Option::is_none")] pub links: Option<Links>,
+    #[serde(skip_serializing_if = "Option::is_none")] pub meta: Option<Meta>,
 }
 
 /// Relationship with another object
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub struct Relationship {
     pub data: IdentifierData,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub links: Option<Links>,
+    #[serde(skip_serializing_if = "Option::is_none")] pub links: Option<Links>,
 }
 
 /// Valid data Resource (can be None)
@@ -79,18 +72,12 @@ pub enum IdentifierData {
 /// The specification refers to this as a top-level `document`
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default)]
 pub struct JsonApiDocument {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub data: Option<PrimaryData>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub included: Option<Resources>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub links: Option<Links>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub meta: Option<Meta>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub errors: Option<JsonApiErrors>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub jsonapi: Option<JsonApiInfo>,
+    #[serde(skip_serializing_if = "Option::is_none")] pub data: Option<PrimaryData>,
+    #[serde(skip_serializing_if = "Option::is_none")] pub included: Option<Resources>,
+    #[serde(skip_serializing_if = "Option::is_none")] pub links: Option<Links>,
+    #[serde(skip_serializing_if = "Option::is_none")] pub meta: Option<Meta>,
+    #[serde(skip_serializing_if = "Option::is_none")] pub errors: Option<JsonApiErrors>,
+    #[serde(skip_serializing_if = "Option::is_none")] pub jsonapi: Option<JsonApiInfo>,
 }
 
 /// Error location
@@ -104,22 +91,14 @@ pub struct ErrorSource {
 /// All fields are optional
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default)]
 pub struct JsonApiError {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub id: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub links: Option<Links>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub status: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub code: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub title: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub detail: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub source: Option<ErrorSource>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub meta: Option<Meta>,
+    #[serde(skip_serializing_if = "Option::is_none")] pub id: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")] pub links: Option<Links>,
+    #[serde(skip_serializing_if = "Option::is_none")] pub status: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")] pub code: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")] pub title: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")] pub detail: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")] pub source: Option<ErrorSource>,
+    #[serde(skip_serializing_if = "Option::is_none")] pub meta: Option<Meta>,
 }
 
 /// Optional `JsonApiDocument` payload identifying the JSON-API version the server implements
@@ -137,7 +116,6 @@ pub struct Pagination {
     pub next: Option<String>,
     pub last: Option<String>,
 }
-
 
 #[derive(Debug)]
 pub struct Patch {
@@ -230,7 +208,6 @@ impl JsonApiDocument {
     /// }
     /// ```
     pub fn validate(&self) -> Option<Vec<DocumentValidationError>> {
-
         let mut errors = Vec::<DocumentValidationError>::new();
 
         if self.has_data() && self.has_errors() {
@@ -249,7 +226,6 @@ impl JsonApiDocument {
             0 => None,
             _ => Some(errors),
         }
-
     }
 }
 
@@ -279,15 +255,7 @@ impl FromStr for JsonApiDocument {
 
 impl Resource {
     pub fn get_relationship(&self, name: &str) -> Option<&Relationship> {
-        match self.relationships {
-            None => None,
-            Some(ref relationships) => {
-                match relationships.get(name) {
-                    None => None,
-                    Some(rel) => Some(rel),
-                }
-            }
-        }
+        self.relationships.as_ref().and_then(|r| r.get(name))
     }
 
     /// Get an attribute `JsonApiValue`
@@ -324,28 +292,31 @@ impl Resource {
     ///   }
     /// }
     pub fn get_attribute(&self, name: &str) -> Option<&JsonApiValue> {
-        match self.attributes.get(name) {
-            None => None,
-            Some(val) => Some(val),
-        }
+        self.attributes.get(name)
     }
 
     pub fn diff(&self, other: &Resource) -> std::result::Result<PatchSet, DiffPatchError> {
         if self._type != other._type {
-            Err(DiffPatchError::IncompatibleTypes(self._type.clone(), other._type.clone()))
+            Err(DiffPatchError::IncompatibleTypes(
+                self._type.clone(),
+                other._type.clone(),
+            ))
         } else {
-
             let mut self_keys: Vec<String> =
-                self.attributes.iter().map(|(key, _)| key.clone()).collect();
+                self.attributes.keys().map(|key| key.clone()).collect();
 
             self_keys.sort();
 
             let mut other_keys: Vec<String> =
-                other.attributes.iter().map(|(key, _)| key.clone()).collect();
+                other.attributes.keys().map(|key| key.clone()).collect();
 
             other_keys.sort();
 
-            let matching = self_keys.iter().zip(other_keys.iter()).filter(|&(a, b)| a == b).count();
+            let matching = self_keys
+                .iter()
+                .zip(other_keys.iter())
+                .filter(|&(a, b)| a == b)
+                .count();
 
             if matching != self_keys.len() {
                 Err(DiffPatchError::DifferentAttributeKeys)
@@ -355,9 +326,10 @@ impl Resource {
                 for (attr, self_value) in &self.attributes {
                     match other.attributes.get(attr) {
                         None => {
-                            error!("Resource::diff unable to find attribute {:?} in {:?}",
-                                   attr,
-                                   other);
+                            error!(
+                                "Resource::diff unable to find attribute {:?} in {:?}",
+                                attr, other
+                            );
                         }
                         Some(other_value) => {
                             if self_value != other_value {
@@ -370,7 +342,6 @@ impl Resource {
                             }
                         }
                     }
-
                 }
 
                 Ok(patchset)
@@ -381,7 +352,8 @@ impl Resource {
     pub fn patch(&mut self, patchset: &PatchSet) -> Result<Resource> {
         let mut res = self.clone();
         for patch in &patchset.patches {
-            res.attributes.insert(patch.subject.clone(), patch.next.clone());
+            res.attributes
+                .insert(patch.subject.clone(), patch.next.clone());
         }
         Ok(res)
     }
@@ -411,10 +383,9 @@ impl FromStr for Resource {
     /// assert_eq!(data.is_ok(), true);
     /// ```
     fn from_str(s: &str) -> Result<Self> {
-        serde_json::from_str(s).chain_err(|| "Error parsing resource" )
+        serde_json::from_str(s).chain_err(|| "Error parsing resource")
     }
 }
-
 
 impl Relationship {
     pub fn as_id(&self) -> std::result::Result<Option<&JsonApiId>, RelationshipAssumptionError> {
